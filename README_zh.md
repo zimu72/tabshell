@@ -15,6 +15,7 @@
   * 新标签页打开
 * 顶部搜索框实时过滤
 * 会话配置 JSON 导入/导出（本地存储）
+<img width="1635" height="1180" alt="image" src="https://github.com/user-attachments/assets/3b6b0fc8-40cd-4044-9ed8-f45bcc4c923c" />
 
 ### 🖥️ 多标签页网格平铺管理
 
@@ -27,6 +28,7 @@
 * **焦点控制**：
   * 当前活动标签页蓝色高亮边框标识
 * 可以结合撰写窗格实现实时多标签动态输入
+<img width="1639" height="1176" alt="image" src="https://github.com/user-attachments/assets/1fad07cc-2de9-43d3-bd43-42a353e465df" />
 
 ### ✍️ 撰写窗口（底部固定区域）
 * **两种输入模式**：
@@ -45,12 +47,14 @@
 * 状态栏显示：`发送到 X/Y 个会话`
 * 命令历史记录 + 自动补全 + 语法高亮
 * 无活动会话/全禁用时友好提示
+<img width="1630" height="1183" alt="image" src="https://github.com/user-attachments/assets/16bad750-e1bf-4712-a7c3-23719237f2c9" />
 
 ### 📤 文件传输
 * 保留 Tabby 原生 SFTP 浏览器（本地+远程）
 * 新增 SFTP 跳转功能：
-  * 支持通过 FileZilla/TabFTP（定制版FileZilla客户端）打开当前连接
-  * 实现单实例多终端管理
+  * 支持通过 FileZilla/TabFTP（专为tabshell定制版FileZilla客户端，实现单实例多终端管理）打开当前sftp
+<img width="1668" height="1171" alt="image" src="https://github.com/user-attachments/assets/168cd2f5-639a-47c6-a32a-ec30a3162d75" />
+<img width="1926" height="1173" alt="image" src="https://github.com/user-attachments/assets/b6898a23-2b86-40be-bd53-4d46761a2e6d" />
 
 ### 🔒 兼容性
 * 基于 Tabby 1.0.170+ 改造
