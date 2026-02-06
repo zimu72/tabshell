@@ -51,7 +51,8 @@
 * Status bar shows: `Sending to X/Y sessions`
 * Command history + auto-complete + syntax highlighting
 * Friendly prompt when no active sessions/all disabled
-<img width="1977" height="1178" alt="image" src="https://github.com/user-attachments/assets/4975ca92-eb0e-4950-b14d-095cb43b8bbe" />
+<img width="1637" height="1171" alt="image" src="https://github.com/user-attachments/assets/835a1ee4-8412-4715-a116-2fa991592372" />
+
 
 ### 📤 File Transfer
 * Retains Tabby's native SFTP browser (local+remote)
