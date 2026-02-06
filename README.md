@@ -57,8 +57,7 @@
 ### 📤 File Transfer
 * Retains Tabby's native SFTP browser (local+remote)
 * New SFTP jump function:
-  * Open current connection via FileZilla/TabFTP (custom FileZilla client)
-  * Single instance multi-terminal management
+  * Open current connection via FileZilla/TabFTP (custom FileZilla client,Single instance multi-terminal management)
 <img width="1975" height="1170" alt="image" src="https://github.com/user-attachments/assets/8400c3b8-04f9-49bd-bdab-fa2122869971" />
 <img width="2054" height="1065" alt="image" src="https://github.com/user-attachments/assets/8ca7802d-888f-417d-a915-0d108ce05619" />
 
