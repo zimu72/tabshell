@@ -1,0 +1,200 @@
+title-bar(
+  *ngIf='ready && !hostWindow.isFullscreen && config.store.appearance.dock == "off" && isTitleBarNeeded()',
+  (dblclick)='toggleMaximize()',
+  [hideControls]='hostApp.platform !== Platform.Linux && !hostWindow.isFullscreen',
+  [class.inset]='hostApp.platform == Platform.macOS && !hostWindow.isFullscreen'
+)
+
+.main-container(*ngIf='ready')
+    session-manager(
+        [hidden]='!isSessionManagerVisible',
+        (toggle)='toggleSessionManager()'
+    )
+
+    .right-side-container
+        .content(
+            [class.tabs-on-top]='config.store.appearance.tabsLocation == "top" || config.store.appearance.tabsLocation == "left" || config.store.appearance.tabsLocation == "right"',
+            [class.tabs-on-left]='hasVerticalTabs() && config.store.appearance.tabsLocation == "left"',
+            [class.tabs-titlebar-enabled]='isTitleBarNeeded()',
+            [class.tabs-on-right]='hasVerticalTabs() && config.store.appearance.tabsLocation == "right"',
+        )
+            .tab-bar(
+                *ngIf='!hostWindow.isFullscreen || config.store.appearance.tabsInFullscreen',
+                [class.tab-bar-no-controls-overlay]='hostApp.platform == Platform.macOS',
+                (dblclick)='!isTitleBarNeeded() && toggleMaximize()'
+            )
+                .inset.background(*ngIf='hostApp.platform == Platform.macOS \
+                && !hostWindow.isFullscreen \
+                && config.store.appearance.frame == "thin" \
+                && (config.store.appearance.tabsLocation == "top" || config.store.appearance.tabsLocation == "left")')
+
+                //- 左侧工具按钮组（Session Manager, Tile Mode, Command Composer）
+                .btn-group.background.left-toolbar
+                    button.btn.btn-secondary.btn-tab-bar(
+                        (click)='toggleSessionManager()',
+                        [class.active]='isSessionManagerVisible',
+                        [ngbTooltip]='"Session Manager"|translate'
+                    )
+                        i.fas.fa-sitemap
+                    button.btn.btn-secondary.btn-tab-bar(
+                        (click)='app.toggleTileMode()',
+                        [class.active]='tileMode',
+                        [ngbTooltip]='"Toggle Tile Mode"|translate'
+                    )
+                        i.fas.fa-th
+                    button.btn.btn-secondary.btn-tab-bar(
+                        *ngIf='config.store.enableCommandComposer',
+                        (click)='toggleCommandComposer()',
+                        [class.active]='isCommandComposerVisible',
+                        [ngbTooltip]='"Toggle Command Composer"|translate'
+                    )
+                        i.fas.fa-terminal
+
+                //- 左侧自定义工具按钮
+                .d-flex.left-toolbar-custom(
+                    *ngFor='let button of leftToolbarButtons'
+                )
+                    button.btn.btn-secondary.btn-tab-bar(
+                        [ngbTooltip]='button.label',
+                        (click)='button.run && button.run()',
+                        [fastHtmlBind]='button.icon'
+                    )
+
+                //- 标签容器（带溢出检测）
+                .tabs-wrapper(#tabsWrapper='')
+                    .tabs(
+                        cdkDropList,
+                        [cdkDropListOrientation]='(config.store.appearance.tabsLocation == "top" || config.store.appearance.tabsLocation == "bottom") ? "horizontal" : "vertical"',
+                        (cdkDropListDropped)='onTabsReordered($event)',
+                        cdkAutoDropGroup='app-tabs'
+                    )
+                        tab-header(
+                            *ngFor='let tab of getVisibleTabs(); let idx = index',
+                            [index]='getOriginalTabIndex(tab)',
+                            [tab]='tab',
+                            [active]='tab == app.activeTab',
+                            [@animateTab]='{value: "in", params: {size: targetTabSize}}',
+                            [@.disabled]='hasVerticalTabs() || !config.store.accessibility.animations',
+                            (click)='app.selectTab(tab)',
+                            [class.fully-draggable]='hostApp.platform !== Platform.macOS',
+                            [class.tab-hidden]='isTabHidden(tab)',
+                            [ngbTooltip]='tab.customTitle || tab.title'
+                        )
+
+                    //- 溢出下拉菜单
+                    .overflow-menu(
+                        ngbDropdown,
+                        container='body',
+                        #overflowDropdown='ngbDropdown',
+                        *ngIf='getHiddenTabs().length > 0'
+                    )
+                        button.btn.btn-secondary.btn-tab-bar.overflow-btn(
+                            ngbDropdownToggle,
+                            [ngbTooltip]='"More tabs"|translate'
+                        )
+                            i.fas.fa-chevron-down
+                            span.overflow-count +{{getHiddenTabs().length}}
+                        .dropdown-menu.overflow-dropdown(ngbDropdownMenu)
+                            .overflow-tab-item(
+                                *ngFor='let tab of getHiddenTabs()',
+                                (click)='selectHiddenTab(tab); overflowDropdown.close()',
+                                [class.active]='tab == app.activeTab'
+                            )
+                                profile-icon(
+                                    *ngIf='tab.icon',
+                                    [icon]='tab.icon',
+                                    [color]='tab.color ?? undefined'
+                                )
+                                .tab-title {{tab.customTitle || tab.title}}
+
+                //- 标签后的拖动区域
+                .tabs-drag-area(
+                    (dblclick)='toggleMaximize()',
+                    *ngIf='config.store.appearance.frame !== "native" \
+                    && (config.store.appearance.tabsLocation !== "left" && config.store.appearance.tabsLocation !== "right")'
+                )
+                    i.fas.fa-grip-vertical.drag-icon
+                    span.drag-text {{'Drag'|translate}}
+
+                //- 文件传输下拉菜单
+                .d-flex(
+                    ngbDropdown,
+                    container='body',
+                    #activeTransfersDropdown='ngbDropdown'
+                )
+                    button.btn.btn-secondary.btn-tab-bar(
+                        [hidden]='activeTransfers.length == 0',
+                        [ngbTooltip]='"File transfers"|translate',
+                        ngbDropdownToggle
+                    ) !{require('../icons/transfers.svg')}
+                    transfers-menu(
+                        ngbDropdownMenu,
+                        [(transfers)]='activeTransfers',
+                        (transfersChange)='onTransfersChange()'
+                    )
+
+                //- 右侧工具按钮组
+                .btn-group.background.right-toolbar
+                    .d-flex(
+                        *ngFor='let button of rightToolbarButtons'
+                    )
+                        button.btn.btn-secondary.btn-tab-bar(
+                            [ngbTooltip]='button.label',
+                            (click)='button.run && button.run()',
+                            [fastHtmlBind]='button.icon'
+                        )
+
+                    button.btn.btn-secondary.btn-tab-bar.btn-update(
+                        *ngIf='updatesAvailable',
+                        [ngbTooltip]='"Update available - Click to install"|translate',
+                        (click)='updater.update()'
+                    ) !{require('../icons/gift.svg')}
+
+                window-controls.background(
+                    *ngIf='config.store.appearance.frame == "thin" \
+                    && config.store.appearance.tabsLocation !== "left" \
+                    && config.store.appearance.tabsLocation !== "right" \
+                    && hostApp.platform == Platform.Linux',
+                )
+
+                div.window-controls-spacer(
+                    *ngIf='config.store.appearance.frame == "thin" && (hostApp.platform == Platform.Windows) && (config.store.appearance.tabsLocation == "top")',
+                )
+            .content(
+                [class.tile-grid]='tileMode'
+            )
+                start-page.content-tab.content-tab-active(*ngIf='ready && app.tabs.length == 0')
+
+                .tile-cell(
+                    *ngFor='let tab of unsortedTabs',
+                    [class.tile-mode]='tileMode',
+                    [class.active]='tileMode && tab == app.activeTab',
+                    (click)='tileMode ? app.selectTab(tab) : null',
+                    [ngStyle]='getTileCellStyles(tab)'
+                )
+                    tab-header.tile-header-component(
+                        *ngIf='tileMode',
+                        [tab]='tab',
+                        [active]='tileMode && tab == app.activeTab',
+                        [draggingEnabled]='false',
+                        (click)='app.selectTab(tab)'
+                    )
+
+                    tab-body.content-tab(
+                        #tabBodies,
+                        [class.content-tab-active]='tileMode || tab == app.activeTab',
+                        [active]='tileMode || tab == app.activeTab',
+                        [tab]='tab',
+                    )
+            
+        .command-composer-resizer(
+            *ngIf='isCommandComposerVisible',
+            (mousedown)='onCommandComposerResizeStart($event)'
+        )
+        command-composer(
+            *ngIf='isCommandComposerVisible',
+            [style.height.px]='commandComposerHeight',
+            (close)='toggleCommandComposer()'
+        )
+
+ng-template(ngbModalContainer)

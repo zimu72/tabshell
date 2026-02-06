@@ -1,0 +1,93 @@
+.session-manager-container
+    .header
+        .title(translate) Sessions
+        .actions
+            button.btn.btn-sm.btn-ghost((click)='refresh()')
+                i.fas.fa-sync
+            button.btn.btn-sm.btn-ghost((click)='exportProfiles()')
+                i.fas.fa-file-export
+            button.btn.btn-sm.btn-ghost((click)='importProfiles()')
+                i.fas.fa-file-import
+            button.btn.btn-sm.btn-ghost((click)='toggle.emit()')
+                i.fas.fa-chevron-left
+
+    .search-box
+        input.form-control.form-control-sm(
+            type='text',
+            [(ngModel)]='filter',
+            (ngModelChange)='refresh()',
+            [placeholder]="'Filter...' | translate"
+        )
+
+    .tree-view((contextmenu)='onContextMenu($event, null)')
+        ng-container(*ngTemplateOutlet='nodeTemplate; context: { nodes: nodes }')
+
+.context-menu-backdrop(
+    *ngIf='contextMenu.visible',
+    (click)='contextMenu.visible = false',
+    (contextmenu)='contextMenu.visible = false; $event.preventDefault()'
+)
+
+.context-menu(
+    *ngIf='contextMenu.visible',
+    [style.top.px]='contextMenu.y',
+    [style.left.px]='contextMenu.x',
+    (click)='contextMenu.visible = false'
+)
+    .menu-item((click)='contextMenu.visible = false; openSelected()')
+        i.fas.fa-play
+        span(translate) Connect
+    .menu-item((click)='contextMenu.visible = false; openInNewTab(contextMenu.node)', *ngIf='contextMenu.node?.type === "session" && selectedNodes.size <= 1')
+        i.fas.fa-external-link-alt
+        span(translate) Open in new tab
+    .menu-item((click)='contextMenu.visible = false; openFileZilla()', *ngIf='contextMenu.node?.profile?.type === "ssh"')
+        i.fas.fa-exchange-alt
+        span(translate) Open in FileZilla
+    .divider(*ngIf='contextMenu.node?.type === "session"')
+    .menu-item((click)='contextMenu.visible = false; editSession(contextMenu.node)', *ngIf='contextMenu.node?.type === "session" && selectedNodes.size <= 1')
+        i.fas.fa-edit
+        span(translate) Edit
+    .menu-item((click)='contextMenu.visible = false; copySession(contextMenu.node)', *ngIf='contextMenu.node?.type === "session" && selectedNodes.size <= 1')
+        i.fas.fa-copy
+        span(translate) Copy
+    .divider(*ngIf='contextMenu.node?.type === "session"')
+    .menu-item((click)='contextMenu.visible = false; createSession(contextMenu.node)')
+        i.fas.fa-plus
+        span(translate) New Session
+    .menu-item((click)='contextMenu.visible = false; createFolder(contextMenu.node)')
+        i.fas.fa-folder-plus
+        span(translate) New Folder
+    .divider
+    .menu-item((click)='contextMenu.visible = false; deleteNode(contextMenu.node)', *ngIf='contextMenu.node')
+        i.fas.fa-trash
+        span(translate) Delete
+
+ng-template(#nodeTemplate, let-nodes='nodes')
+    .node-wrapper(*ngFor='let node of nodes')
+        .node-content(
+            [style.padding-left.px]='node.level * 15 + 10',
+            (click)='onSessionClick($event, node)',
+            (dblclick)='openSession(node)',
+            [class.active]='selectedNodes.has(node)',
+            draggable='true',
+            (dragstart)='onDragStart($event, node)',
+            (dragover)='onDragOver($event, node)',
+            (drop)='onDrop($event, node)',
+            [class.is-folder]='node.type === "folder"',
+            (contextmenu)='onContextMenu($event, node)'
+        )
+            .icon-wrapper
+                i.fas.fa-chevron-right(
+                    *ngIf='node.type === "folder"',
+                    [class.expanded]='node.expanded'
+                )
+                .spacer(*ngIf='node.type !== "folder"')
+            
+            .icon-wrapper
+                i.fas.fa-folder(*ngIf='node.type === "folder"')
+                i.fas.fa-desktop(*ngIf='node.type === "session"')
+            
+            span.name {{node.name}}
+        
+        .children(*ngIf='node.type === "folder" && node.expanded')
+            ng-container(*ngTemplateOutlet='nodeTemplate; context: { nodes: node.children }')

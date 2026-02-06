@@ -1,0 +1,37 @@
+.colorbar([style.background-color]='tab.color', *ngIf='tab.color != null')
+.progressbar([style.width]='progress + "%"', *ngIf='progress != null')
+.activity-indicator(*ngIf='tab.activity$|async')
+.current-tab-indicator
+
+.index(*ngIf='!config.store.terminal.hideTabIndex && hostApp.platform === Platform.macOS', cdkDragHandle) {{index + 1}}
+.index(*ngIf='!config.store.terminal.hideTabIndex && hostApp.platform !== Platform.macOS') {{index + 1}}
+
+profile-icon(
+    *ngIf='config.store.terminal.showTabProfileIcon && tab.icon',
+    [icon]='tab.icon',
+    [color]='tab.color ?? undefined'
+)
+
+.name(
+    [class.no-hover]='config.store.terminal.hideCloseButton && config.store.terminal.hideTabOptionsButton'
+    cdkDrag,
+    [cdkDragDisabled]='!draggingEnabled',
+    cdkDragRootElement='tab-header',
+    [cdkDragData]='tab',
+    (cdkDragStarted)='onTabDragStart(tab)',
+    (cdkDragEnded)='onTabDragEnd()',
+) {{tab.customTitle || tab.title}}
+
+.buttons([class.has-broadcast-active]='config.store.enableCommandComposer')
+    button.broadcast-toggle(
+        *ngIf='config.store.enableCommandComposer',
+        (click)='tab.broadcastEnabled = !tab.broadcastEnabled; $event.stopPropagation()',
+        [class.active]='tab.broadcastEnabled',
+        [ngbTooltip]='"Broadcast input"|translate'
+    )
+        i.fas.fa-bullhorn(*ngIf='tab.broadcastEnabled')
+        i.fas.fa-ban(*ngIf='!tab.broadcastEnabled')
+
+    button(*ngIf='!config.store.terminal.hideCloseButton',(click)='app.closeTab(tab, true)') &times;
+
+ng-content

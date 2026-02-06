@@ -1,0 +1,11 @@
+:host {
+    display: flex;
+    flex: auto;
+    position: relative;
+    overflow: hidden;
+    -webkit-app-region: no-drag;
+
+    >* {
+        flex: auto;
+    }
+}

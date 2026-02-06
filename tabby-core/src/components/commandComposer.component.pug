@@ -1,0 +1,53 @@
+.toolbar
+    .d-flex.align-items-center
+        .title.mr-auto(translate) Send commands to active session
+        
+        .btn-group.mr-2(ngbDropdown)
+            button.btn.btn-sm.btn-link(ngbDropdownToggle)
+                i.fas.fa-cog
+            .dropdown-menu(ngbDropdownMenu)
+                button.dropdown-item((click)='enableAll()')
+                    i.fas.fa-bolt.mr-2
+                    span(translate) Enable all
+                button.dropdown-item((click)='disableAll()')
+                    i.fas.fa-ban.mr-2
+                    span(translate) Disable all
+                button.dropdown-item((click)='onlyCurrent()')
+                    i.fas.fa-thumbtack.mr-2
+                    span(translate) Only current tab
+                button.dropdown-item((click)='invert()')
+                    i.fas.fa-sync.mr-2
+                    span(translate) Invert selection
+
+        button.btn.btn-sm.btn-link((click)='close.emit()')
+            i.fas.fa-times
+
+.input-area
+    textarea.form-control(
+        [(ngModel)]='input',
+        (ngModelChange)='onInput()',
+        (keydown)='onKeyDown($event)',
+        [placeholder]='(mode === "broadcast" ? "Real-time broadcast..." : "Type commands here...")|translate',
+        (contextmenu)='onContextMenu($event)'
+    )
+
+    .completion-menu(*ngIf='completionResults.length > 0')
+        .list-group
+            button.list-group-item.list-group-item-action(
+                *ngFor='let result of completionResults; let i = index',
+                [class.active]='i === completionIndex',
+                (click)='applyCompletion(result)'
+            ) {{ result }}
+
+.footer.d-flex.align-items-center
+    .status-text.mr-auto
+        span.mr-2 {{ (mode === 'broadcast' ? 'Real-time' : 'Buffered') | translate }}
+        span.text-muted {{ ('{count} tabs receiving input' | translate: { count: targetCount }) }}
+    
+    button.btn.btn-primary(
+        *ngIf='mode === "buffered"',
+        (click)='send()',
+        [disabled]='!input'
+    ) 
+        span(translate) Send
+        i.fas.fa-paper-plane.ml-2

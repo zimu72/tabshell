@@ -1,0 +1,157 @@
+h3 SSH
+
+.form-line
+    .header
+        .title(translate) Warn when closing active connections
+    toggle(
+        [(ngModel)]='config.store.ssh.warnOnClose',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line
+    .header
+        .title(translate) Verify host keys when connecting
+    toggle(
+        [(ngModel)]='config.store.ssh.verifyHostKeys',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line(*ngIf='hostApp.platform === Platform.Windows')
+    .header
+        .title(translate) WinSCP path
+        .description(translate) When WinSCP is detected, you can launch an SCP session from the context menu.
+    input.form-control(
+        type='text',
+        placeholder='Auto-detect',
+        [(ngModel)]='config.store.ssh.winSCPPath',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line(*ngIf='hostApp.platform === Platform.Windows')
+    .header
+        .title(translate) Agent type
+        .description(translate) Forces a specific SSH agent connection type.
+    select.form-control(
+        [(ngModel)]='config.store.ssh.agentType',
+        (ngModelChange)='config.save()',
+    )
+        option(value='auto', translate) Automatic
+        option(value='pageant') Pageant
+        option(value='pipe') Named pipe
+
+.form-line(*ngIf='config.store.ssh.agentType === "pipe"')
+    .header
+        .title(translate) Agent pipe path
+        .description(translate) Sets the SSH agent's named pipe path.
+    input.form-control(
+        type='text',
+        placeholder='Default: \\\\.\\pipe\\openssh-ssh-agent',
+        [(ngModel)]='config.store.ssh.agentPath',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line
+    .header
+        .title(translate) Override X11 display
+        .description(translate) Path or address of the local X11 socket
+    input.form-control(
+        type='text',
+        [placeholder]='defaultX11Display',
+        [(ngModel)]='config.store.ssh.x11Display',
+        (ngModelChange)='config.save()'
+    )
+
+h3.mt-5 FileZilla Integration
+
+.form-line
+    .header
+        .title(translate) FileZilla path
+        .description(translate) Path to the FileZilla executable
+    .input-group
+        input.form-control(
+            type='text',
+            [(ngModel)]='config.store.ssh.fileZillaPath',
+            (ngModelChange)='config.save()',
+            [placeholder]='defaultFileZillaPath'
+        )
+        .input-group-append
+            button.btn.btn-secondary((click)='testFileZilla()', translate) Test
+
+.form-group
+    label(translate) Connection Scheme
+    
+    .form-check
+        input.form-check-input(
+            type='radio',
+            name='fileZillaScheme',
+            id='fz-scheme-0',
+            [value]='0',
+            [(ngModel)]='config.store.ssh.fileZillaScheme',
+            (ngModelChange)='config.save()'
+        )
+        label.form-check-label(for='fz-scheme-0')
+            strong(translate) Quick Connect (Pass Password)
+            .text-muted(translate) Passes username and password directly. Warning: Password will be visible in process list.
+
+    .form-check.mt-2
+        input.form-check-input(
+            type='radio',
+            name='fileZillaScheme',
+            id='fz-scheme-2',
+            [value]='2',
+            [(ngModel)]='config.store.ssh.fileZillaScheme',
+            (ngModelChange)='config.save()'
+        )
+        label.form-check-label(for='fz-scheme-2')
+            strong(translate) Use Site Manager (Pre-configured)
+            .text-muted(translate) Uses a saved site from FileZilla Site Manager.
+
+.form-line(*ngIf='config.store.ssh.fileZillaScheme === 2')
+    .header
+        .title(translate) Site Name Prefix
+        .description(translate) Optional prefix to match TabShell profile name with FileZilla site name
+    input.form-control(
+        type='text',
+        [(ngModel)]='config.store.ssh.fileZillaSiteNamePrefix',
+        (ngModelChange)='config.save()'
+    )
+
+.form-line(*ngIf='config.store.ssh.fileZillaScheme === 2')
+    .header
+        .title(translate) Fallback Scheme
+        .description(translate) Action when site is not found
+    select.form-control(
+        [(ngModel)]='config.store.ssh.fileZillaFallbackScheme',
+        (ngModelChange)='config.save()',
+    )
+        option([value]='0', translate) Fallback to Quick Connect
+
+.form-line
+    .header
+        .title(translate) Get Current Working Directory
+        .description(translate) Try to open FileZilla in the current shell directory
+    toggle(
+        [(ngModel)]='config.store.ssh.fileZillaGetCwd',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line
+    .header
+        .title(translate) Silent Start
+        .description(translate) Do not show FileZilla welcome dialogs
+    toggle(
+        [(ngModel)]='config.store.ssh.fileZillaSilent',
+        (ngModelChange)='config.save()',
+    )
+
+.form-line
+    .header
+        .title(translate) Connection Timeout
+        .description(translate) Timeout in seconds
+    input.form-control(
+        type='number',
+        [(ngModel)]='config.store.ssh.fileZillaTimeout',
+        (ngModelChange)='config.save()'
+    )
+
+.alert.alert-info(translate) SSH connection management is now done through the "Profiles & connections" tab

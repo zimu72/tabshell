@@ -1,0 +1,25 @@
+name: tabshell
+version: '1.0.0'
+summary: A terminal for a modern age
+description: |
+  TabShell is a local, SSH and serial terminal heavily inspired by Hyper.
+
+grade: devel
+confinement: devmode
+
+apps:
+  tabshell:
+    command: opt/tabshell/tabshell
+
+parts:
+  app:
+    plugin: nodejs
+    source: .
+    build-packages:
+      - libfontconfig-dev
+    override-build: |
+      yarn
+      yarn run build
+      ./scripts/build-linux.js
+      mkdir -p $SNAPCRAFT_PART_INSTALL/opt/tabshell || true
+      cp -ar dist/linux-unpacked/* $SNAPCRAFT_PART_INSTALL/opt/tabshell/

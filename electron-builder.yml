@@ -1,0 +1,180 @@
+---
+appId: org.tabshell
+productName: TabShell
+compression: normal
+npmRebuild: false
+asar: false
+afterPack: "./scripts/afterPack.cjs"
+directories:
+  app: app
+  output: dist
+files:
+  - "**/*"
+  - "dist/**/*"
+  - "!lib"
+  - "!src"
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,node.lib}"
+  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples,docs}"
+  - "!**/node_modules/@angular/common/locales"
+  - "!**/node_modules/@angular/compiler/src"
+  - "!**/node_modules/**/*.d.ts"
+  - "!**/node_modules/**/include/node"
+  - "!**/node_modules/.bin"
+  - "!**/node_modules/*/*/{esm5,fesm5,esm2015,fesm2015,_esm2015,_fesm2015}"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+  - "!.editorconfig"
+  - "!**/._*"
+  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
+  - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
+  - "!**/{appveyor.yml,.travis.yml,circle.yml}"
+  - "!**/{npm-debug.log,.yarn-integrity,.yarn-metadata.json}"
+  - "!**/deps/cpu_features/build"
+  - "!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme,node.lib}"
+  - "!**/node_modules/*/{test,__tests__,tests,powered-test,example,examples,docs}"
+  - "!**/node_modules/@angular/common/locales"
+  - "!**/node_modules/@angular/compiler/src"
+  - "!**/node_modules/**/*.d.ts"
+  - "!**/node_modules/**/include/node"
+  - "!**/node_modules/.bin"
+  - "!**/node_modules/*/*/{esm5,fesm5,esm2015,fesm2015,_esm2015,_fesm2015}"
+  - "!**/*.{iml,o,hprof,orig,pyc,pyo,rbc,swp,csproj,sln,xproj}"
+  - "!.editorconfig"
+  - "!**/._*"
+  - "!**/{.DS_Store,.git,.hg,.svn,CVS,RCS,SCCS,.gitignore,.gitattributes}"
+  - "!**/{__pycache__,thumbs.db,.flowconfig,.idea,.vs,.nyc_output}"
+  - "!**/{appveyor.yml,.travis.yml,circle.yml}"
+  - "!**/{npm-debug.log,.yarn-integrity,.yarn-metadata.json}"
+  - "!**/deps/cpu_features/build"
+extraResources:
+- builtin-plugins
+- extras
+- from: "./build/windows/tabshell_icon.ico"
+  to: "tabshell_icon.ico"
+asarUnpack:
+- 'dist/*.map'
+- '**/*.node'
+- '**/node_modules/**/*.node'
+- '**/node_modules/node-pty/**/*'
+- '**/node_modules/native-process-working-directory/**/*'
+- '**/node_modules/fontmanager-redux/**/*'
+- '**/node_modules/@tabby-gang/**/*'
+- '**/node_modules/russh/**/*'
+- '**/node_modules/keytar/**/*'
+- '**/node_modules/serialport/**/*'
+- '**/node_modules/@serialport/**/*'
+win:
+  icon: "./build/windows/tabshell_icon.ico"
+  artifactName: tabshell-${version}-portable-${env.ARCH}.${ext}
+  signAndEditExecutable: false
+nsis:
+  oneClick: false
+  artifactName: tabshell-${version}-setup-${env.ARCH}.${ext}
+  installerIcon: "./build/windows/tabshell_icon.ico"
+  uninstallerIcon: "./build/windows/tabshell_icon.ico"
+  allowToChangeInstallationDirectory: true
+  shortcutName: TabShell
+  include: "./build/installer.nsh"
+msi:
+  artifactName: tabshell-${version}-${env.ARCH}.msi
+  perMachine: false
+  runAfterFinish: true
+mac:
+  category: public.app-category.utilities
+  icon: "./build/mac/icon.icns"
+  artifactName: tabshell-${version}-macos-${env.ARCH}.${ext}
+  hardenedRuntime: true
+  entitlements: "./build/mac/entitlements.plist"
+  entitlementsInherit: "./build/mac/entitlements.plist"
+  extendInfo:
+    ElectronTeamID: ${teamId}
+    NSRequiresAquaSystemAppearance: false
+    NSCameraUsageDescription: "A subprocess requests access to the device's camera."
+    NSMicrophoneUsageDescription: "A subprocess requests access to the device's microphone."
+    NSLocationUsageDescription: "A subprocess requests access to the user's location information."
+    NSDesktopFolderUsageDescription: "A subprocess requests access to the user's Desktop folder."
+    NSDocumentsFolderUsageDescription: "A subprocess requests access to the user's Documents folder."
+    NSDownloadsFolderUsageDescription: "A subprocess requests access to the user's Downloads folder."
+    NSNetworkVolumesUsageDescription: 'A subprocess requests access to files on a network volume.'
+    NSRemovableVolumesUsageDescription: 'A subprocess requests access to files on a removable volume.'
+    NSAppleEventsUsageDescription: 'A subprocess requests permission to send AppleScript events to another application.'
+
+linux:
+  category: "Utility;TerminalEmulator;System"
+  icon: "./build/icons"
+  artifactName: tabshell-${version}-linux-${env.ARCH}.${ext}
+  executableArgs:
+  - "--no-sandbox"
+  - "--disable-dev-shm-usage"
+  - "--disable-gpu"
+  desktop:
+    entry:
+      StartupWMClass: tabshell
+snap:
+  plugs:
+  - default
+  - system-files
+  - system-observe
+deb:
+  depends:
+  # 核心依赖
+  - libnotify4
+  - libsecret-1-0
+  - libxtst6
+  - libnss3
+  - libgtk-3-0
+  - libxss1
+  - xdg-utils
+  - libatspi2.0-0
+  - libuuid1
+  - gnome-keyring
+  # 音频支持
+  - libasound2
+  # GPU 和显示
+  - libgbm1
+  - libdrm2
+  - libxkbcommon0
+  - libxrandr2
+  - libxcomposite1
+  - libxdamage1
+  - libxfixes3
+  # 打印支持
+  - libcups2
+  recommends:
+  afterInstall: build/linux/after-install.tpl
+  fpm:
+  - '--replaces'
+  - 'tabby'
+pacman:
+  depends:
+  - gnome-keyring
+  - libsecret
+rpm:
+  depends:
+  # 核心依赖
+  - gnome-keyring
+  - libsecret
+  - libnotify
+  - libXtst
+  - nss
+  - gtk3
+  - libXScrnSaver
+  - xdg-utils
+  - at-spi2-atk
+  - libuuid
+  # 音频支持
+  - alsa-lib
+  # GPU 和显示
+  - mesa-libgbm
+  - libdrm
+  - libxkbcommon
+  - libXrandr
+  - libXcomposite
+  - libXdamage
+  - libXfixes
+  # 打印支持
+  - cups-libs
+  fpm:
+  - '--rpm-rpmbuild-define'
+  - '_build_id_links none'
+  - '--replaces'
+  - 'tabby'

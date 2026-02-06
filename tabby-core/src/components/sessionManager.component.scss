@@ -1,0 +1,145 @@
+:host {
+    display: block;
+    height: 100%;
+    width: 100%;
+    background: var(--theme-ui-bg);
+    border-right: 1px solid var(--theme-bg-less);
+}
+
+.session-manager-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 10px;
+    height: 38px; // Match tab height
+    background: var(--theme-bg-more-2);
+    
+    .title {
+        font-size: 12px;
+        text-transform: uppercase;
+        opacity: 0.7;
+    }
+}
+
+.search-box {
+    padding: 5px;
+    
+    input {
+        width: 100%;
+        background: var(--theme-bg-less);
+        border: none;
+        border-radius: 4px;
+        padding: 4px 8px;
+        color: inherit;
+        
+        &:focus {
+            outline: none;
+            background: var(--theme-bg-less-2);
+        }
+    }
+}
+
+.tree-view {
+    flex: 1;
+    overflow-y: auto;
+    padding-bottom: 20px;
+}
+
+.node-content {
+    display: flex;
+    align-items: center;
+    padding: 2px 0;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--theme-fg-more);
+    
+    &:hover {
+        background: var(--theme-bg-less);
+        color: var(--theme-fg);
+    }
+    
+    &.is-folder {
+        font-weight: bold;
+    }
+
+    &.active {
+        background: var(--theme-primary);
+        color: white;
+    }
+    
+    .icon-wrapper {
+        width: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0.7;
+        
+        .fa-chevron-right {
+            font-size: 10px;
+            transition: transform 0.1s;
+
+            &.expanded {
+                transform: rotate(90deg);
+            }
+        }
+    }
+    
+    .name {
+        margin-left: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+}
+
+.context-menu-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1040;
+}
+
+.context-menu {
+    position: fixed;
+    background: #222;
+    border: 1px solid #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
+    z-index: 1041;
+    padding: 4px 0;
+    min-width: 160px;
+    
+    .menu-item {
+        padding: 6px 12px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        font-size: 13px;
+        color: #eee;
+        
+        &:hover {
+            background: #444;
+        }
+        
+        i {
+            width: 20px;
+            margin-right: 8px;
+            text-align: center;
+            opacity: 0.7;
+        }
+    }
+    
+    .divider {
+        height: 1px;
+        background: #444;
+        margin: 4px 0;
+    }
+}

@@ -1,0 +1,415 @@
+:host {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform;
+    cursor: default;
+    animation: 0.5s ease-out fadeIn;
+    transition: 0.25s background;
+
+    --tabs-height: calc(38px * var(--spaciness));
+    --side-tab-width: calc(200px * var(--spaciness));
+}
+
+$tab-border-radius: 4px;
+
+.wrap {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  flex-direction: row;
+}
+
+.main-container {
+    display: flex;
+    flex: 1 1 0;
+    width: 100vw;
+    min-height: 0;
+
+    session-manager {
+        width: 250px;
+        flex: none;
+        height: 100%;
+        
+        &[hidden] {
+            display: none !important;
+        }
+    }
+}
+
+.right-side-container {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    min-width: 0;
+    min-height: 0;
+}
+
+.command-composer-resizer {
+    height: 5px;
+    cursor: ns-resize;
+    background: transparent;
+    flex: none;
+    z-index: 100;
+    
+    &:hover {
+        background: var(--theme-fg-more);
+        opacity: 0.1;
+    }
+}
+
+.content {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column-reverse;
+
+    &.tabs-on-top {
+        flex-direction: column;
+    }
+
+    &.tabs-on-right {
+        flex-direction: row-reverse;
+    }
+
+    &.tabs-on-left {
+        flex-direction: row;
+    }
+
+    &.tile-grid {
+        flex-direction: row !important;
+        flex-wrap: wrap;
+        align-content: stretch;
+        
+        tab-body {
+            flex: 1;
+            width: 100%;
+            height: 0;
+            display: flex !important;
+        }
+    }
+
+    // Default mode: hide inactive tabs
+    &:not(.tile-grid) {
+        tab-body:not(.content-tab-active) {
+            display: none !important;
+        }
+
+        tab-body.content-tab-active {
+            z-index: 11 !important;
+            position: relative !important;
+            pointer-events: auto !important;
+        }
+    }
+}
+
+.tile-cell {
+    display: contents;
+
+    &.tile-mode {
+        display: flex;
+        flex-direction: column;
+        border: 2px solid transparent;
+        box-sizing: border-box;
+        overflow: hidden;
+
+        &.active {
+            border-color: var(--theme-primary);
+            z-index: 1;
+        }
+    }
+    .tile-header-component {
+        flex: none;
+        width: 100% !important;
+        height: 28px;
+        background: var(--theme-bg-more);
+
+        &.active {
+            background: var(--theme-bg-more-2);
+        }
+
+        ::ng-deep .name {
+            font-size: 12px;
+        }
+
+        ::ng-deep .index {
+            display: none;
+        }
+    }
+}
+
+.content.tabs-on-left > .tab-bar, .content.tabs-on-right > .tab-bar {
+    height: 100%;
+    width: var(--side-tab-width);
+    overflow-y: auto;
+    overflow-x: hidden;
+    flex-direction: column;
+    background: var(--theme-ui-bg);
+
+    .tabs {
+        width: var(--side-tab-width);
+        flex: none;
+        flex-direction: column;
+
+        tab-header {
+            flex: 0 0 var(--tabs-height);
+        }
+    }
+
+    .btn-space {
+        flex: auto;
+    }
+
+    &>.inset {
+        opacity: 0;
+        width: 100%;
+    }
+
+    ::ng-deep tab-header {
+        width: 100% !important;
+    }
+}
+
+.content.tabs-on-left > .tab-bar.tab-bar-no-controls-overlay, .content.tabs-titlebar-enabled {
+    .tabs {
+        padding-top: 0 !important;
+    }
+}
+
+.content.tabs-on-right > .tab-bar {
+    .tabs {
+        // Account for WCO on Windows.
+        padding-top: 36px;
+    }
+}
+
+.tab-bar {
+    flex: none;
+    height: var(--tabs-height);
+    display: flex;
+    width: 100%;
+    align-items: center;
+
+    // 左侧工具按钮组
+    .left-toolbar {
+        flex: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .left-toolbar-custom {
+        flex: none;
+    }
+
+    // 标签容器包装器（带溢出检测）
+    .tabs-wrapper {
+        flex: 1 1 auto;
+        min-width: 0;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        position: relative;
+
+        .tabs {
+            flex: 0 1 auto;
+            display: flex;
+            min-width: 0;
+            overflow: hidden;
+            max-width: 100%;
+        }
+
+        // 溢出菜单
+        .overflow-menu {
+            flex: none;
+            display: flex;
+            align-items: center;
+        }
+    }
+
+    // 标签后的拖动区域（固定宽度，不抢占标签空间）
+    .tabs-drag-area {
+        flex: 0 0 auto;
+        width: 50px;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        color: var(--theme-fg-more);
+        opacity: 0.6;
+        -webkit-app-region: drag;
+        cursor: grab;
+        
+        .drag-icon {
+            font-size: 10px;
+            pointer-events: none;
+        }
+        
+        .drag-text {
+            font-size: 10px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            pointer-events: none;
+        }
+        
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    // 右侧工具按钮组
+    .right-toolbar {
+        flex: none;
+        display: flex;
+        align-items: center;
+    }
+
+    .btn-tab-bar {
+        line-height: calc(var(--tabs-height) + 2px);
+        height: var(--tabs-height);
+        cursor: pointer;
+
+        display: flex;
+        align-items: center;
+        padding: 0 12px;
+        flex: 0 0 auto;
+        border-bottom: 2px solid transparent;
+        transition: 0.125s all ease-out;
+        font-size: 12px;
+
+        text-transform: uppercase;
+        font-weight: bold;
+        color: var(--theme-fg-more);
+        border: none;
+        border-radius: 0;
+        background: transparent !important;
+
+        align-items: center;
+
+        &.dropdown-toggle::after {
+            display: none;
+        }
+
+        &:hover {
+            background: rgba(0, 0, 0, 0.03) !important;
+            color: var(--theme-fg, #1d1d1f) !important;
+        }
+
+        &:hover i,
+        &:hover svg {
+            color: currentColor !important;
+        }
+
+        &:hover svg,
+        &:hover svg path {
+            fill: currentColor !important;
+        }
+
+        &:active,
+        &.active {
+            background: rgba(0, 0, 0, 0.06) !important;
+        }
+    }
+
+    // 溢出按钮样式
+    .overflow-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 8px;
+        min-width: 40px;
+
+        i {
+            font-size: 10px;
+        }
+
+        .overflow-count {
+            font-size: 11px;
+            margin-left: 4px;
+            font-weight: bold;
+        }
+    }
+
+    &>.tabs {
+        flex: 0 1 auto;
+        display: flex;
+        min-width: 0;
+    }
+
+    &>.btn-space {
+        min-width: 1px;
+        flex: 1 0 1%;
+
+        .tabs-on-top & {
+            margin-top: 2px; // for window resizing
+        }
+
+        &.drag {
+            -webkit-app-region: drag;
+        }
+
+        &.persistent {
+        //   min-width: 72px; // 2 x 36 px height, ie 2 squares
+        // Given WCO on Windows, the min-width of the window buttons is about 138px.
+            min-width: 138px;
+        }
+    }
+
+    &>.window-controls-spacer {
+        min-width: 138px;
+        height: 100%;
+    }
+
+    & > .inset {
+        width: calc(70px + 15px * var(--spaciness));
+        height: var(--tabs-height);
+        flex: none;
+        -webkit-app-region: drag;
+    }
+
+    window-controls {
+        padding-left: 10px;
+    }
+}
+
+// 溢出下拉菜单样式
+.overflow-dropdown {
+    max-height: 400px;
+    overflow-y: auto;
+    min-width: 200px;
+    padding: 4px 0;
+
+    .overflow-tab-item {
+        display: flex;
+        align-items: center;
+        padding: 8px 12px;
+        cursor: pointer;
+        transition: 0.15s background ease-out;
+
+        &:hover {
+            background: var(--theme-bg-more);
+        }
+
+        &.active {
+            background: var(--theme-bg-more-2);
+        }
+
+        profile-icon {
+            margin-right: 8px;
+            font-size: 14px;
+        }
+
+        .tab-title {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            font-size: 13px;
+        }
+    }
+}
